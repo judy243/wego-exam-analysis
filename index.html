@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>薇閣國中第一次段考成績分析 Index by 學姐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg-cream:#faf9f5; --bg-paper:#f5f4ed; --bg-dark:#141413; --bg-ink:#1f1e1c;
+    --text-primary:#141413; --text-secondary:#5a574e; --text-inverse:#faf9f5;
+    --border-subtle:#e6e4da;
+    --green-deep:#2c6e54; --green-mid:#439e80; --green-soft:#57a78e;
+    --green-pale:#a9ecd3; --green-wash:#e2f4eb;
+    --accent:#c15f3c;
+    --font-serif:"Fraunces","Tiempos Text",Georgia,serif;
+    --font-sans:"Inter","Styrene B",system-ui,sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg-cream); color:var(--text-primary);
+    font-family:var(--font-sans); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--text-primary); text-decoration:underline; text-decoration-color:#c0bdb1; text-underline-offset:3px}
+  a:hover{text-decoration-color:var(--accent); color:var(--accent)}
+
+  .container{max-width:1280px; margin:0 auto; padding:0 32px}
+  .container-narrow{max-width:720px; margin:0 auto; padding:0 32px}
+
+  /* Nav */
+  header.nav{
+    position:sticky; top:0; z-index:50; background:rgba(250,249,245,.92);
+    backdrop-filter:saturate(140%) blur(8px);
+    border-bottom:1px solid transparent; transition:border-color .2s;
+  }
+  header.nav.pinned{border-bottom-color:var(--border-subtle)}
+  .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:18px 32px; max-width:1280px; margin:0 auto}
+  .brand{font-family:var(--font-serif); font-size:20px; letter-spacing:-.01em}
+  .brand em{font-style:italic; color:var(--text-secondary)}
+  .nav-links{display:flex; gap:28px; font-size:15px; font-weight:500}
+  .nav-links a{text-decoration:none}
+  .nav-links a:hover{color:var(--accent)}
+  @media(max-width:720px){.nav-links{display:none}}
+
+  /* Hero */
+  .hero{padding:120px 0 80px; border-bottom:1px solid var(--border-subtle)}
+  .eyebrow{
+    font-size:13px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--text-secondary); margin-bottom:24px;
+  }
+  h1.display{
+    font-family:var(--font-serif); font-weight:400; font-size:clamp(40px,6vw,64px);
+    line-height:1.05; letter-spacing:-.02em; margin:0 0 28px;
+  }
+  h1.display em{font-style:italic; color:var(--green-deep)}
+  .lead{font-family:var(--font-serif); font-size:22px; line-height:1.5; max-width:680px; color:var(--text-primary)}
+  .meta{
+    display:flex; flex-wrap:wrap; gap:24px; margin-top:40px;
+    font-size:13px; color:var(--text-secondary); letter-spacing:.01em;
+  }
+  .meta span{display:inline-flex; align-items:center; gap:8px}
+  .meta .dot{width:6px; height:6px; background:var(--green-mid); border-radius:999px}
+
+  /* Section */
+  section{padding:96px 0; border-bottom:1px solid var(--border-subtle)}
+  h2{font-family:var(--font-serif); font-weight:400; font-size:44px; line-height:1.1; letter-spacing:-.015em; margin:0 0 16px}
+  h3{font-family:var(--font-serif); font-weight:500; font-size:24px; line-height:1.25; margin:0 0 8px; letter-spacing:-.01em}
+  p.muted{color:var(--text-secondary); font-size:15px; max-width:680px}
+
+  /* Tabs */
+  .tabs{display:flex; gap:32px; margin:32px 0 48px; border-bottom:1px solid var(--border-subtle); overflow-x:auto}
+  .tab{
+    background:none; border:none; padding:12px 0; font-family:var(--font-sans);
+    font-size:15px; color:var(--text-secondary); cursor:pointer; position:relative;
+    white-space:nowrap; font-weight:500;
+  }
+  .tab:hover{color:var(--text-primary)}
+  .tab[aria-selected="true"]{color:var(--text-primary)}
+  .tab[aria-selected="true"]::after{
+    content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--text-primary);
+  }
+
+  /* Stats grid */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-bottom:48px}
+  @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{
+    background:var(--bg-cream); border:1px solid var(--border-subtle);
+    border-radius:12px; padding:24px; transition:border-color .2s;
+  }
+  .stat:hover{border-color:var(--text-primary)}
+  .stat .label{font-size:13px; color:var(--text-secondary); letter-spacing:.04em; text-transform:uppercase; font-weight:500}
+  .stat .value{font-family:var(--font-serif); font-size:40px; line-height:1.1; margin-top:8px; letter-spacing:-.01em}
+  .stat .value small{font-size:16px; color:var(--text-secondary); font-family:var(--font-sans); margin-left:6px}
+  .stat .sub{font-size:13px; color:var(--text-secondary); margin-top:6px; font-family:var(--font-mono)}
+
+  /* Chart containers */
+  .chart-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px}
+  @media(max-width:960px){.chart-grid{grid-template-columns:1fr}}
+  .chart-card{
+    background:var(--bg-cream); border:1px solid var(--border-subtle);
+    border-radius:16px; padding:32px;
+  }
+  .chart-card h3{margin-bottom:4px}
+  .chart-card .cap{font-size:13px; color:var(--text-secondary); margin-bottom:24px}
+  .chart-wrap{position:relative; height:340px}
+
+  /* Subject selector */
+  .subj-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px}
+  .pill{
+    font-family:var(--font-sans); font-size:13px; font-weight:500;
+    padding:8px 14px; border-radius:999px; border:1px solid var(--border-subtle);
+    background:transparent; color:var(--text-primary); cursor:pointer; transition:all .2s;
+  }
+  .pill:hover{border-color:var(--text-primary)}
+  .pill[aria-pressed="true"]{background:var(--text-primary); color:var(--text-inverse); border-color:var(--text-primary)}
+
+  /* Table */
+  table{width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:14px}
+  th,td{padding:12px 8px; text-align:right; border-bottom:1px solid var(--border-subtle)}
+  th:first-child,td:first-child{text-align:left; font-family:var(--font-sans); font-weight:500}
+  th{font-family:var(--font-sans); font-size:13px; font-weight:500; color:var(--text-secondary); letter-spacing:.04em; text-transform:uppercase}
+  tbody tr:hover{background:var(--bg-paper)}
+  .cell-bar{position:relative; text-align:left; font-family:var(--font-mono); padding:6px 0}
+  .cell-bar .fill{position:absolute; left:0; top:0; bottom:0; background:var(--green-wash); border-radius:2px}
+  .cell-bar .num{position:relative; padding:4px 8px}
+
+  /* Insights */
+  .insights{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:48px}
+  @media(max-width:900px){.insights{grid-template-columns:1fr}}
+  .insight{border-left:2px solid var(--green-mid); padding:8px 0 8px 20px}
+  .insight .eyebrow{margin-bottom:8px}
+  .insight p{margin:0; font-family:var(--font-serif); font-size:19px; line-height:1.45}
+
+  /* Footer */
+  footer{background:var(--bg-dark); color:var(--text-inverse); padding:64px 0}
+  footer .container{display:flex; justify-content:space-between; flex-wrap:wrap; gap:32px}
+  footer .brand{color:var(--text-inverse); font-size:18px}
+  footer .copy{font-size:13px; color:#8a877f; font-family:var(--font-mono)}
+
+  /* Accessibility */
+  :focus-visible{outline:2px solid var(--text-primary); outline-offset:2px; border-radius:4px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="brand">薇閣國中第一次段考成績分析 <em>Index by 學姐</em></div>
+    <nav class="nav-links">
+      <a href="#overview">Overview</a>
+      <a href="#grades">By Grade</a>
+      <a href="#distribution">Distribution</a>
+      <a id="makerLinkTop" href="https://lin.ee/6w1to8e" target="_blank" rel="noopener" style="color:var(--accent); text-decoration-color:var(--accent)">薇閣學姐補習班 ↗</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Research · 114-2 第一次段考 · Index by 學姐</div>
+    <h1 class="display">薇閣國中第一次段考<em>成績分析</em></h1>
+    <p class="lead">An interactive analysis of 臺北市私立薇閣高級中學 first-midterm results — 七年級 through 高一 — drawn from six to nine subject sittings per grade, totalling 1,643 student records across four cohorts.</p>
+    <div class="meta">
+      <span><span class="dot"></span>1,643 students</span>
+      <span><span class="dot"></span>4 grade cohorts</span>
+      <span><span class="dot"></span>9 subjects tracked</span>
+      <span><span class="dot"></span>114 學年度 · 第二學期</span>
+    </div>
+  </div>
+</section>
+
+<section id="overview">
+  <div class="container">
+    <div class="eyebrow">Section 01 · Overview</div>
+    <h2>Cohort at a glance</h2>
+    <p class="muted">Each cohort carries a different subject mix: junior-high (7–8) blends language, mathematics, social studies and science; grade 9 adds 生科 and 微觀; grade 10 splits into 社會組 and 自然組 tracks.</p>
+
+    <div class="stats" style="margin-top:48px">
+      <div class="stat"><div class="label">Grade 7 · 七年級</div><div class="value">454<small>人</small></div><div class="sub">6 subjects · mean 79.64</div></div>
+      <div class="stat"><div class="label">Grade 8 · 八年級</div><div class="value">598<small>人</small></div><div class="sub">7 subjects · mean 79.82</div></div>
+      <div class="stat"><div class="label">Grade 9 · 九年級</div><div class="value">313<small>人</small></div><div class="sub">9 subjects · mean 77.06</div></div>
+      <div class="stat"><div class="label">Grade 10 · 高一</div><div class="value">278<small>人</small></div><div class="sub">自然組 · 6 subjects</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-top:16px">
+      <h3>Mean score (均標) by grade and subject</h3>
+      <div class="cap">Lower bars mark the subjects where cohorts struggle most. Hover for exact values.</div>
+      <div class="chart-wrap" style="height:420px"><canvas id="chartOverview"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section id="grades">
+  <div class="container">
+    <div class="eyebrow">Section 02 · By Grade</div>
+    <h2>Pick a cohort, read the story</h2>
+    <p class="muted">Switch between grade cohorts to compare 均標 (mean), 高標 (top-quartile mean) and 低標 (bottom-quartile mean) across every subject that cohort sat.</p>
+
+    <div class="tabs" role="tablist" id="gradeTabs">
+      <button class="tab" role="tab" aria-selected="true" data-grade="g7">七年級 · Grade 7</button>
+      <button class="tab" role="tab" aria-selected="false" data-grade="g8">八年級 · Grade 8</button>
+      <button class="tab" role="tab" aria-selected="false" data-grade="g9">九年級 · Grade 9</button>
+      <button class="tab" role="tab" aria-selected="false" data-grade="g10s">高一社會組 · G10 Social</button>
+      <button class="tab" role="tab" aria-selected="false" data-grade="g10n">高一自然組 · G10 Science</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="label">Cohort size</div><div class="value" id="sSize">—</div></div>
+      <div class="stat"><div class="label">Average 均標</div><div class="value" id="sMean">—</div><div class="sub" id="sMeanSub"></div></div>
+      <div class="stat"><div class="label">最高均標 · Highest mean</div><div class="value" id="sTop" style="font-size:28px">—</div><div class="sub" id="sTopSub"></div></div>
+      <div class="stat"><div class="label">最低均標 · Lowest mean</div><div class="value" id="sBot" style="font-size:28px">—</div><div class="sub" id="sBotSub"></div></div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Range: 低標 → 均標 → 高標</h3>
+        <div class="cap">The gap between low and high markers shows internal variance within the cohort.</div>
+        <div class="chart-wrap"><canvas id="chartRange"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Subject scoreboard</h3>
+        <div class="cap">Sorted by 均標 (mean). Green bar length encodes the mean on a 0–100 scale.</div>
+        <div style="max-height:340px; overflow:auto">
+          <table id="tableBoard">
+            <thead><tr><th>科目</th><th>均標</th><th>高標</th><th>低標</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="distribution">
+  <div class="container">
+    <div class="eyebrow">Section 03 · Distribution</div>
+    <h2>Where the students actually land</h2>
+    <p class="muted">Score-band histograms for junior-high cohorts (7–9). Pick a subject to see how students distribute across the 60以下 → 100 buckets.</p>
+
+    <div class="subj-row" id="distGrades" role="tablist" style="margin-top:32px">
+      <button class="pill" aria-pressed="true" data-dg="g7">七年級</button>
+      <button class="pill" aria-pressed="false" data-dg="g8">八年級</button>
+      <button class="pill" aria-pressed="false" data-dg="g9">九年級</button>
+    </div>
+    <div class="subj-row" id="distSubjects"></div>
+
+    <div class="chart-card">
+      <h3 id="distTitle">—</h3>
+      <div class="cap" id="distCap">—</div>
+      <div class="chart-wrap" style="height:380px"><canvas id="chartDist"></canvas></div>
+    </div>
+
+    <div class="insights">
+      <div class="insight">
+        <div class="eyebrow">Finding · 01</div>
+        <p>Mathematics drops sharpest from grade 7 to grade 10, but the top-quartile climbs to <em>91.4</em> in G10 自然組 — the strongest single-subject mean in the dataset.</p>
+      </div>
+      <div class="insight">
+        <div class="eyebrow">Finding · 02</div>
+        <p>Grade 7 地理 posts a <em>96.76</em> 高標 and the smallest standard deviation (10.58) — the most consistently high-performing sitting.</p>
+      </div>
+      <div class="insight">
+        <div class="eyebrow">Finding · 03</div>
+        <p>Grade 8 理化 and Grade 9 理化 sit as the structural weak points — both below 70 mean, with almost a third of G8 below the 70 band.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>
+      <div class="brand">Wego · <em>Academic Index</em></div>
+      <div class="copy" style="margin-top:12px">Based on 臺北市私立薇閣高級中學 114 學年度第二學期 第一次段考 official reports.</div>
+      <div class="copy" style="margin-top:8px">
+        本網站由 <a id="makerLink" href="https://lin.ee/6w1to8e" target="_blank" rel="noopener" style="color:#faf9f5; text-decoration-color:#5a574e">薇閣學姐補習班</a> 製作 · Made by Wego Senior Sisters Cram School
+      </div>
+    </div>
+    <div class="copy">© 2026 · Built with the Anthropic Economic Index design language.</div>
+  </div>
+</footer>
+
+<script>
+/* ---------- Data ---------- */
+const DATA = {
+  g7: {
+    label:"七年級 · Grade 7", size:454,
+    subjects:[
+      {n:"國文", mean:76.37, high:85.52, low:67.21, sd:12.21, bins:[43,68,131,166,46,0]},
+      {n:"英語", mean:84.16, high:93.43, low:74.89, sd:13.75, bins:[34,0,52,141,207,0]},
+      {n:"數學", mean:65.76, high:81.07, low:50.44, sd:19.99, bins:[149,64,95,125,21,0]},
+      {n:"歷史", mean:82.52, high:93.15, low:71.90, sd:14.90, bins:[45,24,58,133,181,13]},
+      {n:"地理", mean:89.74, high:96.76, low:82.73, sd:10.58, bins:[14,9,32,89,270,40]},
+      {n:"生物", mean:79.28, high:90.47, low:68.17, sd:15.33, bins:[56,32,70,160,133,3]},
+    ],
+    bands:["60以下","60-69","70-79","80-89","90-99","100"],
+  },
+  g8: {
+    label:"八年級 · Grade 8", size:598,
+    subjects:[
+      {n:"國文", mean:83.06, high:91.18, low:74.94, sd:11.40, bins:[28,34,92,232,209,3]},
+      {n:"英語", mean:83.17, high:92.28, low:74.05, sd:13.13, bins:[33,46,87,201,231,0]},
+      {n:"數學", mean:72.97, high:82.92, low:63.01, sd:13.95, bins:[72,101,234,149,40,2]},
+      {n:"歷史", mean:89.65, high:97.34, low:81.96, sd:12.49, bins:[23,15,44,101,346,69]},
+      {n:"地理", mean:82.91, high:90.60, low:75.22, sd:11.42, bins:[28,32,86,263,186,3]},
+      {n:"公民", mean:82.13, high:91.63, low:72.63, sd:13.73, bins:[46,36,93,229,188,6]},
+      {n:"理化", mean:64.87, high:78.53, low:51.21, sd:17.48, bins:[199,117,169,84,29,0]},
+    ],
+    bands:["60以下","60-69","70-79","80-89","90-99","100"],
+  },
+  g9: {
+    label:"九年級 · Grade 9", size:313,
+    subjects:[
+      {n:"國文", mean:80.5, high:86.9, low:74.1, sd:8.2,  bins:[2,25,83,158,44,0]},
+      {n:"英語", mean:82.2, high:89.1, low:75.3, sd:9.9,  bins:[6,21,70,154,62,0]},
+      {n:"數學", mean:75.8, high:87.1, low:64.5, sd:14.6, bins:[38,53,76,91,55,0]},
+      {n:"歷史", mean:85.3, high:92.3, low:78.3, sd:9.9,  bins:[5,6,69,124,110,9]},
+      {n:"地理", mean:73.4, high:81.3, low:65.6, sd:9.7,  bins:[21,92,107,79,14,0]},
+      {n:"公民", mean:79.8, high:86.0, low:73.7, sd:7.9,  bins:[3,31,103,147,28,1]},
+      {n:"生科", mean:73.5, high:84.8, low:62.2, sd:14.4, bins:[50,65,75,88,35,0]},
+      {n:"理化", mean:69.9, high:80.2, low:59.6, sd:14.4, bins:[61,84,89,74,11,0]},
+      {n:"微觀", mean:77.7, high:88.8, low:66.7, sd:14.0, bins:[37,44,69,90,71,2]},
+    ],
+    bands:["60以下","60-69","70-79","80-89","90-99","100"],
+  },
+  g10s: {
+    label:"高一社會組 · G10 Social", size:64,
+    subjects:[
+      {n:"國文", mean:83.34, high:88.69, low:null, sd:null},
+      {n:"英文", mean:67.58, high:79.59, low:null, sd:null},
+      {n:"數學", mean:59.38, high:73.41, low:null, sd:null},
+      {n:"歷史", mean:70.69, high:77.75, low:null, sd:null},
+      {n:"地理", mean:73.45, high:81.31, low:null, sd:null},
+      {n:"公民", mean:72.67, high:79.81, low:null, sd:null},
+    ],
+  },
+  g10n: {
+    label:"高一自然組 · G10 Science", size:278,
+    subjects:[
+      {n:"國文", mean:83.86, high:89.58, low:null, sd:null},
+      {n:"英文", mean:76.27, high:88.19, low:null, sd:null},
+      {n:"數學", mean:77.28, high:91.40, low:null, sd:null},
+      {n:"科學對話", mean:65.00, high:80.23, low:null, sd:null},
+      {n:"化學", mean:62.83, high:77.17, low:null, sd:null},
+      {n:"生物", mean:77.73, high:85.58, low:null, sd:null},
+    ],
+  },
+};
+
+const COLOR = {
+  deep:"#2c6e54", mid:"#439e80", soft:"#57a78e", pale:"#a9ecd3", wash:"#e2f4eb",
+  ink:"#141413", muted:"#5a574e", hair:"#e6e4da", cream:"#faf9f5", accent:"#c15f3c",
+};
+
+Chart.defaults.font.family = "Inter, system-ui, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = COLOR.muted;
+
+/* ---------- Overview chart ---------- */
+(function(){
+  const grades = ["g7","g8","g9","g10n"];
+  const allSubs = [...new Set(grades.flatMap(g=>DATA[g].subjects.map(s=>s.n)))];
+  const datasets = grades.map((g,i)=>({
+    label: DATA[g].label.split(" · ")[0],
+    data: allSubs.map(sn=>{const s=DATA[g].subjects.find(x=>x.n===sn); return s?s.mean:null}),
+    backgroundColor:[COLOR.deep,COLOR.mid,COLOR.soft,COLOR.pale][i],
+    borderRadius:4, barPercentage:.85, categoryPercentage:.78,
+  }));
+  new Chart(document.getElementById("chartOverview"),{
+    type:"bar",
+    data:{labels:allSubs, datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:"top", align:"end", labels:{usePointStyle:true, pointStyle:"rectRounded", padding:18}},
+        tooltip:{backgroundColor:COLOR.ink, padding:12, titleFont:{weight:600}, cornerRadius:6,
+          callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y ?? "—"}`}},
+      },
+      scales:{
+        x:{grid:{display:false}, border:{color:COLOR.hair}},
+        y:{min:40, max:100, grid:{color:COLOR.hair, borderDash:[3,3]}, border:{display:false},
+          ticks:{callback:v=>v}},
+      },
+    },
+  });
+})();
+
+/* ---------- Grade tab / range chart / table ---------- */
+let rangeChart;
+function renderGrade(gKey){
+  const g = DATA[gKey];
+  const subs = [...g.subjects].sort((a,b)=>b.mean-a.mean);
+  const means = subs.map(s=>s.mean);
+  const avgMean = means.reduce((a,b)=>a+b,0)/means.length;
+  const top = subs[0], bot = subs[subs.length-1];
+
+  document.getElementById("sSize").innerHTML = g.size + '<small>人</small>';
+  document.getElementById("sMean").innerHTML = avgMean.toFixed(1);
+  document.getElementById("sMeanSub").textContent = `across ${subs.length} subjects`;
+  document.getElementById("sTop").textContent = top.n;
+  document.getElementById("sTopSub").textContent = `均標 ${top.mean}`;
+  document.getElementById("sBot").textContent = bot.n;
+  document.getElementById("sBotSub").textContent = `均標 ${bot.mean}`;
+
+  const labels = subs.map(s=>s.n);
+  const hasLow = subs.every(s=>s.low!=null);
+  const datasets = [];
+  if(hasLow){
+    datasets.push({
+      label:"低標 → 高標", type:"bar",
+      data: subs.map(s=>[s.low, s.high]),
+      backgroundColor: COLOR.wash, borderColor: COLOR.soft, borderWidth:1,
+      borderSkipped:false, borderRadius:4, barPercentage:.55,
+    });
+  } else {
+    datasets.push({
+      label:"均標 → 高標", type:"bar",
+      data: subs.map(s=>[s.mean, s.high]),
+      backgroundColor: COLOR.wash, borderColor: COLOR.soft, borderWidth:1,
+      borderSkipped:false, borderRadius:4, barPercentage:.55,
+    });
+  }
+  datasets.push({
+    label:"均標", type:"scatter",
+    data: subs.map((s,i)=>({x:s.mean, y:i})),
+    backgroundColor: COLOR.deep, borderColor: COLOR.deep,
+    pointRadius:6, pointHoverRadius:8,
+  });
+
+  if(rangeChart) rangeChart.destroy();
+  rangeChart = new Chart(document.getElementById("chartRange"),{
+    type:"bar",
+    data:{labels, datasets},
+    options:{
+      indexAxis:"y", responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:"top", align:"end", labels:{usePointStyle:true, padding:14}},
+        tooltip:{backgroundColor:COLOR.ink, padding:12, cornerRadius:6,
+          callbacks:{
+            label:c=>{
+              if(c.dataset.type==="scatter") return ` 均標 ${c.parsed.x}`;
+              const v = c.raw;
+              return ` ${c.dataset.label}: ${v[0]} → ${v[1]}`;
+            }
+          }},
+      },
+      scales:{
+        x:{min:40, max:100, grid:{color:COLOR.hair, borderDash:[3,3]}, border:{display:false}},
+        y:{grid:{display:false}, border:{color:COLOR.hair}},
+      },
+    },
+  });
+
+  /* Table */
+  const tb = document.querySelector("#tableBoard tbody"); tb.innerHTML = "";
+  subs.forEach(s=>{
+    const tr = document.createElement("tr");
+    const w = Math.max(2, s.mean) + "%";
+    tr.innerHTML = `
+      <td>${s.n}</td>
+      <td class="cell-bar"><span class="fill" style="width:${w}"></span><span class="num">${s.mean.toFixed(2)}</span></td>
+      <td>${s.high?.toFixed(2) ?? "—"}</td>
+      <td>${s.low!=null ? s.low.toFixed(2) : "—"}</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+document.querySelectorAll("#gradeTabs .tab").forEach(t=>{
+  t.addEventListener("click", ()=>{
+    document.querySelectorAll("#gradeTabs .tab").forEach(x=>x.setAttribute("aria-selected","false"));
+    t.setAttribute("aria-selected","true");
+    renderGrade(t.dataset.grade);
+  });
+});
+renderGrade("g7");
+
+/* ---------- Distribution ---------- */
+let distChart, distGrade="g7", distSubject="國文";
+function renderDistSubjects(){
+  const row = document.getElementById("distSubjects"); row.innerHTML="";
+  DATA[distGrade].subjects.forEach(s=>{
+    const b = document.createElement("button");
+    b.className="pill"; b.textContent=s.n; b.setAttribute("aria-pressed", s.n===distSubject);
+    b.addEventListener("click", ()=>{distSubject=s.n; renderDistSubjects(); renderDist();});
+    row.appendChild(b);
+  });
+}
+function renderDist(){
+  const g = DATA[distGrade];
+  const s = g.subjects.find(x=>x.n===distSubject) || g.subjects[0];
+  distSubject = s.n;
+  document.getElementById("distTitle").textContent = `${g.label.split(" · ")[0]} · ${s.n}`;
+  document.getElementById("distCap").textContent =
+    `均標 ${s.mean} · 高標 ${s.high} · 低標 ${s.low} · SD ${s.sd} · n=${g.size}`;
+
+  const colors = g.bands.map(b=>{
+    if(b==="60以下") return COLOR.accent;
+    if(b==="60-69") return COLOR.muted;
+    if(b==="70-79") return COLOR.soft;
+    if(b==="80-89") return COLOR.mid;
+    return COLOR.deep;
+  });
+
+  if(distChart) distChart.destroy();
+  distChart = new Chart(document.getElementById("chartDist"),{
+    type:"bar",
+    data:{labels:g.bands, datasets:[{
+      label:"人數", data:s.bins, backgroundColor:colors, borderRadius:4, barPercentage:.7,
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:COLOR.ink, padding:12, cornerRadius:6,
+          callbacks:{label:c=>` ${c.parsed.y} 人 · ${(c.parsed.y/g.size*100).toFixed(1)}%`}},
+      },
+      scales:{
+        x:{grid:{display:false}, border:{color:COLOR.hair}},
+        y:{grid:{color:COLOR.hair, borderDash:[3,3]}, border:{display:false}, beginAtZero:true},
+      },
+    },
+  });
+}
+document.querySelectorAll("#distGrades .pill").forEach(p=>{
+  p.addEventListener("click", ()=>{
+    document.querySelectorAll("#distGrades .pill").forEach(x=>x.setAttribute("aria-pressed","false"));
+    p.setAttribute("aria-pressed","true");
+    distGrade = p.dataset.dg;
+    distSubject = DATA[distGrade].subjects[0].n;
+    renderDistSubjects(); renderDist();
+  });
+});
+renderDistSubjects(); renderDist();
+
+/* ---------- Nav pin ---------- */
+const nav = document.getElementById("nav");
+addEventListener("scroll", ()=>{ nav.classList.toggle("pinned", scrollY>8); });
+</script>
+</body>
+</html>
